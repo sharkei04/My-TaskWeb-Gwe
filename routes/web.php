@@ -3,47 +3,59 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RegisterController;
 use App\Models\User;
 
-Route::get('/', function () {
-    return view('auth.login');
-});
+    Route::get('/', function () {
+        return redirect()->route('login.form');
+    });
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login.form');
+    Route::get('/login', function () {
+        return view('auth.login');
+    })->name('login.form');
 
-Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register.form');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::get('/dashboard', function () {
-    return view('dashboard.dashboard');
-})->name('dashboard');
+    Route::get('/register', function () {
+        return view('auth.register');
+    })->name('register');
 
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 
-Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/lupapassword', function () {
+        return view('auth.lupapassword');
+    })->name('lupapassword');
 
-Route::get('/tasks', function () {
-    return 'Halaman My Tasks nanti diisi daftar task.';
-})->name('tasks.index');
+    Route::post('/lupa-password', [AuthController::class, 'sendResetLink'])->name('password.send');
 
-Route::get('/tasks/create', function () {
-    return 'Halaman tambah task. Status: ' . request('status');
-})->name('tasks.create');
+    Route::get('/dashboard', function () {
+        return view('dashboard.dashboard');
+    })->name('dashboard');
 
-Route::get('/members', function () {
-    $members = User::latest()->get();
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
 
-    return view('members.index', compact('members'));
-})->name('members.index');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
-Route::get('/admin', function () {
-    return 'Halaman Admin nanti diisi pengaturan admin.';
-})->name('admin.index');
+    Route::get('/tasks', function () {
+        return 'Halaman My Tasks nanti diisi daftar task.';
+    })->name('tasks.index');
 
-Route::get('/boards/create', function () {
-    return 'Halaman tambah board.';
-})->name('boards.create');
+    Route::get('/tasks/create', function () {
+        return 'Halaman tambah task. Status: ' . request('status');
+    })->name('tasks.create');
+
+    Route::get('/members', function () {
+        $members = User::latest()->get();
+
+        return view('members.member', compact('members'));
+    })->name('members.index');
+
+    Route::get('/admin', function () {
+        return 'Halaman Admin nanti diisi pengaturan admin.';
+    })->name('admin.index');
+
+    Route::get('/boards/create', function () {
+        return 'Halaman tambah board.';
+    })->name('boards.create');
+
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

@@ -112,5 +112,10 @@
             </div>
         </form>
     </div>
+
+    <footer class="mt-auto flex h-[7vh] items-center justify-center border-t border-black bg-white text-[1.7vh] font-semibold tracking-wide text-gray-500">
+        © 2026 Taskora. All rights reserved.
+    </footer>
+    
 </div>
 @endsection
