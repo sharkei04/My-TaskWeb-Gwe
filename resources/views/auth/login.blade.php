@@ -3,7 +3,6 @@
 @section('content')
 <div class="flex items-center justify-center min-h-[80vh]">
     <!-- Header -->
-    <div class="">
     <div class="w-[450px] max-w-lg bg-white rounded-md p-8 border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
 
         <!-- Header Box -->
@@ -87,4 +86,4 @@
 
     </div>
 </div>
-@endsection
+@endsection 
