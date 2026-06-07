@@ -8,20 +8,20 @@
     $columns = [
         [
             'title' => 'To do',
-            'status' => 'to do',
-            'count' => 0,
+            'status' => 'todo',
+            'count' => isset($tasks['todo']) ? $tasks['todo']->count() : 0,
             'headerClass' => 'bg-gray-100',
         ],
         [
             'title' => 'In Progress',
             'status' => 'in_progress',
-            'count' => 0,
+            'count' => isset($tasks['in_progress']) ? $tasks['in_progress']->count() : 0,
             'headerClass' => 'bg-yellow-300',
         ],
         [
             'title' => 'Done',
             'status' => 'done',
-            'count' => 0,
+            'count' => isset($tasks['done']) ? $tasks['done']->count() : 0,
             'headerClass' => 'bg-green-400',
         ],
     ];
@@ -78,12 +78,33 @@
                         :status="$column['status']"
                         :count="$column['count']"
                         :header-class="$column['headerClass']"
-                    />
-                @endforeach
+                    >
+                        @foreach($tasks[$column['status']] ?? [] as $task)
+                            <div class="p-3 bg-white border border-black rounded">
+                                <p class="text-sm font-bold">{{ $task->title }}</p>
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    @foreach($task->labels as $label)
+                                        <span class="text-xs border border-black px-2 py-0.5 font-bold">{{ $label->name }}</span>
+                                    @endforeach
+                                </div>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-xs text-gray-500">
+                                        @if($task->priority === 'high') 🔴
+                                        @elseif($task->priority === 'medium') 🟡
+                                        @else 🟢 @endif
+                                        {{ $task->deadline ? $task->deadline->format('d M') : 'No deadline' }}
+                                    </span>
+                                    <a href="{{ route('tasks.edit', $task) }}"
+                                    class="text-xs font-black border border-black px-2 py-0.5 hover:bg-black hover:text-white">
+                                        Edit
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </x-kanban-column>
+    @endforeach
             </div>
-
-        </div>
-    </section>
+        </section>
 
     <footer class="mt-auto flex h-14 items-center justify-center border-t border-black bg-white text-sm font-semibold tracking-wide text-gray-500">
         © 2026 Taskora. All rights reserved.

@@ -127,7 +127,7 @@
                         <textarea
                             name="bio"
                             rows="4"
-                            placeholder="Tulis bio singkat kamu"
+                            placeholder="Tulis bio singkat"
                             class="w-full resize-none rounded-xl border border-black bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-amber-300"
                         >{{ old('bio', $user?->bio) }}</textarea>
                     </div>
@@ -136,14 +136,14 @@
                     <div class="flex items-center gap-3 pt-2">
                         <button
                             type="submit"
-                            class="flex-1 rounded-xl border border-black bg-yellow-300 px-4 py-3 text-sm font-semibold text-black shadow-[5px_5px_0_#000] transition duration-200 hover:translate-x-1 hover:translate-y-1 hover:bg-white hover:shadow-none"
+                            class="flex-1 cursor-pointer rounded-xl border border-black bg-yellow-300 px-4 py-3 text-sm font-semibold text-black shadow-[5px_5px_0_#000] transition duration-200 hover:translate-x-1 hover:translate-y-1 hover:bg-white hover:shadow-none"
                         >
                             Save Profile
                         </button>
 
                         <a
                             href="{{ route('dashboard') }}"
-                            class="flex-1 rounded-xl border border-black bg-white px-4 py-3 text-center text-sm font-semibold text-black shadow-[5px_5px_0_#000] transition duration-200 hover:translate-x-1 hover:translate-y-1 hover:bg-yellow-300 hover:shadow-none"
+                            class="flex-1 cursor-pointer rounded-xl border border-black bg-white px-4 py-3 text-center text-sm font-semibold text-black shadow-[5px_5px_0_#000] transition duration-200 hover:translate-x-1 hover:translate-y-1 hover:bg-yellow-300 hover:shadow-none"
                         >
                             Back
                         </a>

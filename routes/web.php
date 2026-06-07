@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\TaskController;
 use App\Models\User;
 
     Route::get('/', function () {
@@ -29,20 +30,18 @@ use App\Models\User;
     Route::post('/lupa-password', [AuthController::class, 'sendResetLink'])->name('password.send');
 
     Route::get('/dashboard', function () {
-        return view('dashboard.dashboard');
+        $tasks = \App\Models\Task::with(['labels', 'assignedTo'])
+                    ->where('user_id', auth()->id())
+                    ->get()
+                    ->groupBy('status');
+        return view('dashboard.dashboard', compact('tasks'));
     })->name('dashboard');
 
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
 
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
-    Route::get('/tasks', function () {
-        return 'Halaman My Tasks nanti diisi daftar task.';
-    })->name('tasks.index');
-
-    Route::get('/tasks/create', function () {
-        return 'Halaman tambah task. Status: ' . request('status');
-    })->name('tasks.create');
+    Route::resource('tasks', TaskController::class);
 
     Route::get('/members', function () {
         $members = User::latest()->get();
