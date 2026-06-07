@@ -9,7 +9,7 @@
         [
             'title' => 'To do',
             'status' => 'todo',
-            'count' => isset($tasks['todo']) ? $tasks['todo']->count() : 0,
+            'count' => isset($tasks['to_do']) ? $tasks['to_do']->count() : 0,
             'headerClass' => 'bg-gray-100',
         ],
         [
@@ -61,13 +61,6 @@
                             </option>
                         </select>
                     </form>
-
-                    <a
-                        href="{{ route('boards.create') }}"
-                        class="flex h-11 w-full items-center justify-center rounded-lg border border-black bg-blue-600 px-4 text-sm font-bold text-white shadow-[4px_4px_0_#000] transition hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:w-auto"
-                    >
-                        + New Board
-                    </a>
                 </div>
             </div>
 

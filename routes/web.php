@@ -77,8 +77,10 @@ use App\Models\Member;
 
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
-    Route::resource('tasks', TaskController::class);
-    Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.status.update');
+    Route::middleware('auth')->group(function () {
+        Route::resource('tasks', TaskController::class);
+        Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.status.update');
+    });
 
     Route::get('/members', [MemberController::class, 'index'])->name('members.index');
 
@@ -97,9 +99,5 @@ use App\Models\Member;
     Route::get('/exportdata', function () {
         return view('admin.exportdata');
     })->name('exportdata');
-
-    Route::get('/boards/create', function () {
-        return 'Halaman tambah board.';
-    })->name('boards.create');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

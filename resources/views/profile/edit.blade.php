@@ -57,7 +57,7 @@
                     <!-- Foto Profil -->
                     @php
                         $initial = strtoupper(substr($user?->nickname ?? $user?->name ?? 'U', 0, 1));
-                        $photoUrl = $user?->photo ? asset('storage/' . $user->photo) : '';
+                        $photoUrl = $user?->photo ? asset('storage/' . ltrim($user->photo, '/')) : '';
                     @endphp
                     <div class="flex items-center gap-[1.5vw]">
                         {{-- Avatar preview --}}

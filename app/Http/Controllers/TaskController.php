@@ -40,7 +40,7 @@ class TaskController extends Controller
             'assigned_to' => 'nullable|exists:users,id',
         ]);
 
-        $validated['user_id'] = auth()->id();
+        $validated['user_id'] = auth()->user()->id();
         $task = Task::create($validated);
 
         if ($request->labels) {

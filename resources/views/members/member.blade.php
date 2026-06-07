@@ -13,7 +13,7 @@
                 <input type="email" name="email" placeholder="Email address"
                     class="flex-1 rounded-xl border border-black px-4 py-3 text-base outline-none focus:ring-2 focus:ring-amber-300" required>
                 <button type="submit"
-                    class="rounded-xl border border-black bg-yellow-300 px-8 py-3 text-base font-bold text-black shadow-md transition hover:translate-x-1 hover:translate-y-1 hover:bg-white hover:shadow-none">
+                    class="rounded-xl border border-black bg-yellow-300 px-8 py-3 text-base font-bold text-black shadow-[0.4vw_0.4vw_0_#000] transition hover:translate-x-1 hover:translate-y-1 hover:bg-white hover:shadow-none">
                     Invite
                 </button>
             </form>
@@ -34,49 +34,55 @@
                 $btnClass = 'rounded-lg border border-black bg-yellow-300 px-5 py-2 text-sm font-bold text-black shadow-md transition hover:translate-x-1 hover:translate-y-1 hover:bg-white hover:shadow-none';
             @endphp
 
-            {{-- Cards --}}
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {{-- Admin Card --}}
-                <div class="relative rounded-2xl border border-black bg-white p-6 shadow-md">
+            {{-- Cards Container --}}
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 justify-items-center">
+
+                {{-- ADMIN CARD --}}
+                @if($admin)
+                <div class="relative rounded-2xl border border-black bg-white p-6 shadow-md w-full max-w-xs">
                     <div class="flex items-center gap-5 mb-5">
                         <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-black bg-white">
-                            @if($admin?->photo)
+                            @if($admin->photo)
                                 <img src="{{ asset('storage/' . $admin->photo) }}" alt="{{ $admin->nickname ?? $admin->name }}" class="h-full w-full object-cover">
                             @else
-                                <span class="text-2xl font-bold text-black">{{ strtoupper(substr($admin?->nickname ?? $admin?->name ?? 'U', 0, 1)) }}</span>
+                                <span class="text-2xl font-bold text-black">{{ strtoupper(substr($admin->nickname ?? $admin->name ?? 'U', 0, 1)) }}</span>
                             @endif
                         </div>
                         <div class="min-w-0">
-                            <h2 class="truncate text-2xl font-bold text-black">{{ $admin?->nickname ?? $admin?->name }}</h2>
-                            <p class="mt-1 text-base text-gray-600">{{ $admin?->bio ?? 'No bio yet.' }}</p>
+                            <h2 class="truncate text-2xl font-bold text-black">{{ $admin->nickname ?? $admin->name }}</h2>
+                            <p class="mt-1 text-base text-gray-600">{{ $admin->bio ?? 'No bio yet.' }}</p>
                         </div>
                     </div>
-                    <p class="text-base font-semibold text-gray-500">Role: Admin</p>
+
+                    {{-- Role display from database --}}
+                    <p class="text-base font-semibold text-gray-500">Role: {{ ucfirst($admin->role) }}</p>
                     <span class="absolute bottom-6 right-6 rounded-lg border border-black bg-yellow-300 px-5 py-2 text-sm font-bold text-black shadow-md cursor-default">
-                        Admin
+                        {{ ucfirst($admin->role) }}
                     </span>
                 </div>
+                @endif
 
-                {{-- Member Cards --}}
+                {{-- MEMBER CARDS --}}
                 @forelse ($members as $member)
                     @php $user = $member->member; @endphp
-                    <div class="relative rounded-2xl border border-black bg-white p-6 shadow-md">
+                    <div class="relative rounded-2xl border border-black bg-white p-6 shadow-md w-full max-w-xs">
                         <div class="flex items-center gap-5 mb-5">
                             <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-black bg-white">
-                                @if($user?->photo)
+                                @if($user->photo)
                                     <img src="{{ asset('storage/' . $user->photo) }}" alt="{{ $user->nickname ?? $user->name }}" class="h-full w-full object-cover">
                                 @else
-                                    <span class="text-2xl font-bold text-black">{{ strtoupper(substr($user?->nickname ?? $user?->name ?? 'U', 0, 1)) }}</span>
+                                    <span class="text-2xl font-bold text-black">{{ strtoupper(substr($user->nickname ?? $user->name ?? 'U', 0, 1)) }}</span>
                                 @endif
                             </div>
                             <div class="min-w-0">
-                                <h2 class="truncate text-2xl font-bold text-black">{{ $user?->nickname ?? $user?->name }}</h2>
-                                <p class="mt-1 text-base text-gray-600">{{ $user?->bio ?? 'No bio yet.' }}</p>
+                                <h2 class="truncate text-2xl font-bold text-black">{{ $user->nickname ?? $user->name }}</h2>
+                                <p class="mt-1 text-base text-gray-600">{{ $user->bio ?? 'No bio yet.' }}</p>
                             </div>
                         </div>
 
-                        <p class="text-base font-semibold text-gray-500">Role: Member</p>
+                        <p class="text-base font-semibold text-gray-500">Role: {{ ucfirst($member->role) }}</p>
 
+                        {{-- Leave button if the current user --}}
                         @if ($member->member_id === auth()->id())
                             <form action="{{ route('members.leave', $member) }}" method="POST" class="absolute bottom-6 right-6">
                                 @csrf
@@ -96,9 +102,9 @@
                         <p class="text-base font-semibold text-gray-500">No members have been invited yet.</p>
                     </div>
                 @endforelse
+
             </div>
         </div>
     </section>
-
 </div>
 @endsection

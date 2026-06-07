@@ -11,16 +11,24 @@ class MemberController extends Controller
 {
     public function index()
     {
-        $admin = Auth::user();
+        // Ambil user yang sedang login
+        $currentUser = Auth::user();
 
+        // Ambil admin dari database berdasarkan kolom role
+        // Jadi admin tidak lagi hardcode dari Auth::user()
+        $admin = User::where('role', 'admin')->first();
+
+        // Ambil daftar member yang di-invite oleh user login
         $members = Member::with('member')
             ->where('user_id', Auth::id())
             ->latest()
             ->get();
 
-        $totalMembers = $members->count() + 1;
+        // Hitung total collaborator:
+        // 1 admin + jumlah member yang di-invite
+        $totalMembers = $members->count() + ($admin ? 1 : 0);
 
-        return view('members.member', compact('admin', 'members', 'totalMembers'));
+        return view('members.member', compact('admin', 'members', 'totalMembers', 'currentUser'));
     }
 
     public function invite(Request $request)

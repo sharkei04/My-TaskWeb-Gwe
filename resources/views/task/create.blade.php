@@ -39,7 +39,7 @@
                             Task Title <span class="text-red-600">*</span>
                         </label>
                         <input type="text" name="title" value="{{ old('title') }}"
-                                placeholder="Example: Implement login authentication..."
+                                placeholder="E.g., Implement login authentication..."
                                 class="w-full border-2 border-black px-3 py-2.5 text-sm font-medium focus:bg-yellow-50 outline-none @error('title') border-red-500 @enderror">
                         @error('title')
                             <p class="mt-1 text-xs font-bold text-red-600">{{ $message }}</p>
@@ -54,7 +54,7 @@
                                     class="w-full border-2 border-black px-3 py-2.5 text-sm font-medium focus:bg-yellow-50 outline-none resize-y">{{ old('description') }}</textarea>
                     </div>
 
-                    {{-- STATUS BUTTON --}}
+                    {{-- STATUS --}}
                     <div>
                         <label class="block mb-2 text-xs font-black tracking-wide uppercase">Status <span class="text-red-600">*</span></label>
                         <div class="grid grid-cols-3 gap-2">
@@ -80,14 +80,14 @@
                         Priority & Deadline
                     </h2>
 
-                    {{-- PRIORITY BUTTON --}}
+                    {{-- PRIORITY --}}
                     <div class="mb-5">
                         <label class="block mb-2 text-xs font-black tracking-wide uppercase">
                             Priority <span class="text-red-600">*</span>
                         </label>
                         <div class="grid grid-cols-3 gap-2">
                             <label class="cursor-pointer border-2 border-black p-2.5 text-center text-xs font-black transition-colors has-[:checked]:bg-emerald-100 has-[:checked]:border-emerald-500">
-                                <input type="radio" name="priority" value="low" class="hidden" {{ old('priority') === 'low' ? 'checked' : '' }}>
+                                <input type="radio" name="priority" value="low" class="hidden" {{ old('priority', 'medium') === 'low' ? 'checked' : '' }}>
                                 Low
                             </label>
                             <label class="cursor-pointer border-2 border-black p-2.5 text-center text-xs font-black transition-colors has-[:checked]:bg-amber-100 has-[:checked]:border-amber-500">
@@ -95,7 +95,7 @@
                                 Medium
                             </label>
                             <label class="cursor-pointer border-2 border-black p-2.5 text-center text-xs font-black transition-colors has-[:checked]:bg-red-100 has-[:checked]:border-red-500">
-                                <input type="radio" name="priority" value="high" class="hidden" {{ old('priority') === 'high' ? 'checked' : '' }}>
+                                <input type="radio" name="priority" value="high" class="hidden" {{ old('priority', 'medium') === 'high' ? 'checked' : '' }}>
                                 High
                             </label>
                         </div>
@@ -106,9 +106,11 @@
                         <label class="block mb-2 text-xs font-black tracking-wide uppercase">Deadline</label>
                         <input type="date" name="deadline" value="{{ old('deadline') }}"
                                 class="w-full border-2 border-black px-3 py-2.5 text-sm font-medium focus:bg-yellow-50 outline-none cursor-pointer">
-                        <p class="mt-1 text-xs font-semibold text-gray-500">Leave empty if not set</p>
+                        <p class="mt-1 text-xs font-semibold text-gray-500">Leave empty if not determined</p>
                     </div>
                 </div>
+
+            </div>
 
             {{-- RIGHT: SIDEBAR --}}
             <div class="flex flex-col gap-5">

@@ -27,7 +27,7 @@ class ProfileController extends Controller
         if (! Auth::check()) {
             return redirect()
                 ->route('login.form')
-                ->withErrors(['email' => 'Silakan login terlebih dahulu.']);
+                ->withErrors(['email' => 'Please login first.']);
         }
 
         $user = Auth::user();
@@ -45,17 +45,19 @@ class ProfileController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            if ($user->photo) {
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
                 Storage::disk('public')->delete($user->photo);
             }
 
-            $validated['photo'] = $request->file('photo')->store('profile-photos', 'public');
+            $photoPath = $request->file('photo')->store('profile-photos', 'public');
+
+            $validated['photo'] = $photoPath;
         }
 
         $user->update($validated);
 
         return redirect()
             ->route('dashboard')
-            ->with('success', 'Profil berhasil diperbarui.');
+            ->with('success', 'Profile updated successfully.');
     }
 }
