@@ -5,7 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\MemberController; 
 use App\Models\User;
+use App\Models\Member;
 
     Route::get('/', function () {
         return redirect()->route('login.form');
@@ -43,11 +45,9 @@ use App\Models\User;
 
     Route::resource('tasks', TaskController::class);
 
-    Route::get('/members', function () {
-        $members = User::latest()->get();
+    Route::get('/members', [MemberController::class, 'index'])->name('members.index');
 
-        return view('members.member', compact('members'));
-    })->name('members.index');
+    Route::post('/members/invite', [MemberController::class, 'invite'])->name('members.invite');
 
     Route::get('/admin', function () {
         return 'Halaman Admin nanti diisi pengaturan admin.';
