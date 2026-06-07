@@ -29,7 +29,7 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $validated = $request->validate([
             'title'       => 'required|string|max:255',
@@ -40,7 +40,8 @@ class TaskController extends Controller
             'assigned_to' => 'nullable|exists:users,id',
         ]);
 
-        $validated['user_id'] = auth()->user()->id();
+        $validated['user_id'] = auth()->id();
+
         $task = Task::create($validated);
 
         if ($request->labels) {
@@ -48,9 +49,8 @@ class TaskController extends Controller
         }
 
         return redirect()->route('dashboard')
-                        ->with('success', 'Tugas berhasil ditambahkan!');
+                        ->with('success', 'Task added successfully!');
     }
-
     /**
      * Display the specified resource.
      */
