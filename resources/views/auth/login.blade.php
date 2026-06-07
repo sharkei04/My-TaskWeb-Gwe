@@ -8,7 +8,6 @@
         <!-- Header Box -->
         <div class="text-left pb-7">
             <h1 class="text-3xl font-bold text-black">Login To Taskora</h1>
-            <p class="text-gray-500 mt-2">Login untuk melanjutkan ke Taskora</p>
         </div>
 
             <!-- Status success -->
@@ -80,7 +79,7 @@
 
         <!-- Footer -->
         <p class="text-center text-sm text-gray-500 mt-6">
-            Belum punya akun?
+            Don't have an account?
             <a href="{{ route('register') }}" class="text-yellow-500 hover:underline">Register</a>
         </p>
 

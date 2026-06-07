@@ -11,12 +11,16 @@ class MemberController extends Controller
 {
     public function index()
     {
-        $members = Member::with('user')
+        $admin = Auth::user();
+
+        $members = Member::with('member')
             ->where('user_id', Auth::id())
             ->latest()
             ->get();
 
-        return view('members.member', compact('members'));
+        $totalMembers = $members->count() + 1;
+
+        return view('members.member', compact('admin', 'members', 'totalMembers'));
     }
 
     public function invite(Request $request)
@@ -29,7 +33,7 @@ class MemberController extends Controller
 
         if ($invitedUser->id === Auth::id()) {
             return back()->withErrors([
-                'email' => 'Kamu tidak bisa invite akun sendiri.',
+                'email' => 'You cannot invite yourself.',
             ]);
         }
 
@@ -43,6 +47,30 @@ class MemberController extends Controller
             ]
         );
 
-        return back();
+        return back()->with('success', 'Member invited successfully.');
+    }
+
+    public function destroy(Member $member)
+    {
+        if ($member->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $member->delete();
+
+        return back()->with('success', 'Member kicked successfully.');
+    }
+
+    public function leave(Member $member)
+    {
+        if ($member->member_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $member->delete();
+
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'You have left the workspace.');
     }
 }

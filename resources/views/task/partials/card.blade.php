@@ -18,11 +18,11 @@
     {{-- Priority Badge --}}
     <div class="mb-2">
         @if($task->priority === 'high')
-            <span class="text-[10px] font-black bg-red-100 border-[1.5px] border-black px-2 py-0.5">🔴 High</span>
+            <span class="text-[10px] font-black bg-red-100 border-[1.5px] border-black px-2 py-0.5">High</span>
         @elseif($task->priority === 'medium')
-            <span class="text-[10px] font-black bg-amber-100 border-[1.5px] border-black px-2 py-0.5">🟡 Medium</span>
+            <span class="text-[10px] font-black bg-amber-100 border-[1.5px] border-black px-2 py-0.5">Medium</span>
         @else
-            <span class="text-[10px] font-black bg-emerald-100 border-[1.5px] border-black px-2 py-0.5">🟢 Low</span>
+            <span class="text-[10px] font-black bg-emerald-100 border-[1.5px] border-black px-2 py-0.5">Low</span>
         @endif
     </div>
 
@@ -30,9 +30,9 @@
     <div class="flex items-center justify-between mt-2">
         <span class="text-[10px] text-gray-500 font-semibold">
             @if($task->deadline)
-                📅 {{ $task->deadline->format('d M') }}
+                {{ $task->deadline->format('d M') }}
             @else
-                Tanpa deadline
+                No deadline
             @endif
         </span>
         <a href="{{ route('tasks.edit', $task) }}"

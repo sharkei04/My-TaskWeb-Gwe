@@ -38,7 +38,7 @@
                     </h2>
 
                     <p class="mt-2 text-base font-semibold leading-normal tracking-wide text-gray-500">
-                        Hallo, {{ $nickname }}! What you gonna do today? ^^
+                        Hallo, {{ $nickname }}! What you gonna do? ^^
                     </p>
                 </div>
 
@@ -71,7 +71,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3" id="board-columns">
                 @foreach ($columns as $column)
                     <x-kanban-column
                         :title="$column['title']"
@@ -79,35 +79,39 @@
                         :count="$column['count']"
                         :header-class="$column['headerClass']"
                     >
-                        @foreach($tasks[$column['status']] ?? [] as $task)
-                            <div class="p-3 bg-white border border-black rounded">
-                                <p class="text-sm font-bold">{{ $task->title }}</p>
-                                <div class="flex flex-wrap gap-1 mt-1">
-                                    @foreach($task->labels as $label)
-                                        <span class="text-xs border border-black px-2 py-0.5 font-bold">{{ $label->name }}</span>
-                                    @endforeach
+                        <div class="space-y-3 kanban-dropzone" data-status="{{ $column['status'] }}">
+                            @foreach($tasks[$column['status']] ?? [] as $task)
+                                <div
+                                    class="task-card p-3 bg-white border border-black rounded cursor-grab"
+                                    draggable="true"
+                                    data-task-id="{{ $task->id }}"
+                                    data-status="{{ $column['status'] }}"
+                                >
+                                    <p class="text-sm font-bold">{{ $task->title }}</p>
+                                    <div class="flex flex-wrap gap-1 mt-1">
+                                        @foreach($task->labels as $label)
+                                            <span class="text-xs border border-black px-2 py-0.5 font-bold">{{ $label->name }}</span>
+                                        @endforeach
+                                    </div>
+                                    <div class="flex items-center justify-between mt-2">
+                                        <span class="text-xs text-gray-500">
+                                            @if($task->priority === 'high') 🔴
+                                            @elseif($task->priority === 'medium') 🟡
+                                            @else 🟢 @endif
+                                            {{ $task->deadline ? $task->deadline->format('d M') : 'No deadline' }}
+                                        </span>
+                                        <a href="{{ route('tasks.edit', $task) }}"
+                                        class="text-xs font-black border border-black px-2 py-0.5 hover:bg-black hover:text-white">
+                                            Edit
+                                        </a>
+                                    </div>
                                 </div>
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="text-xs text-gray-500">
-                                        @if($task->priority === 'high') 🔴
-                                        @elseif($task->priority === 'medium') 🟡
-                                        @else 🟢 @endif
-                                        {{ $task->deadline ? $task->deadline->format('d M') : 'No deadline' }}
-                                    </span>
-                                    <a href="{{ route('tasks.edit', $task) }}"
-                                    class="text-xs font-black border border-black px-2 py-0.5 hover:bg-black hover:text-white">
-                                        Edit
-                                    </a>
-                                </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </x-kanban-column>
     @endforeach
             </div>
         </section>
 
-    <footer class="mt-auto flex h-14 items-center justify-center border-t border-black bg-white text-sm font-semibold tracking-wide text-gray-500">
-        © 2026 Taskora. All rights reserved.
-    </footer>
 </div>
 @endsection

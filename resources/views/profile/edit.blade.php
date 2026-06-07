@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
-<body class="min-h-screen bg-gray-100 font-[Inter]">
+<body class="min-h-screen bg-gray-100">
     <div class="flex min-h-screen flex-col">
 
         <!-- Navbar -->
@@ -33,10 +33,6 @@
                     <h1 class="text-3xl font-bold leading-tight text-black">
                         Edit Profile
                     </h1>
-
-                    <p class="mt-2 text-sm text-gray-500">
-                        Ubah username, nickname, bio, dan foto profil kamu.
-                    </p>
                 </div>
 
                 <!-- Success Message -->
@@ -59,32 +55,51 @@
                     @method('PUT')
 
                     <!-- Foto Profil -->
-                    <div class="flex items-center gap-4">
-                        <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-black bg-white">
-                            @if ($user?->photo)
-                                <img
-                                    src="{{ asset('storage/' . $user?->photo) }}"
-                                    alt="Profile Photo"
-                                    class="h-full w-full object-cover"
-                                >
-                            @else
-                                <span class="text-xl font-bold text-black">
-                                    {{ strtoupper(substr($user?->nickname ?? $user?->name ?? 'U', 0, 1)) }}
-                                </span>
-                            @endif
+                    @php
+                        $initial = strtoupper(substr($user?->nickname ?? $user?->name ?? 'U', 0, 1));
+                        $photoUrl = $user?->photo ? asset('storage/' . $user->photo) : '';
+                    @endphp
+                    <div class="flex items-center gap-[1.5vw]">
+                        {{-- Avatar preview --}}
+                        <div
+                            id="avatarWrapper"
+                            class="relative flex h-[10vh] w-[10vh] shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-black bg-white shadow-[3px_3px_0_#000] transition hover:opacity-80"
+                            title="Klik untuk ganti foto"
+                            onclick="document.getElementById('photoInput').click()"
+                        >
+                            {{-- Foto (tampil jika ada, fallback ke initial jika gagal load) --}}
+                            <img
+                                id="avatarPreview"
+                                src="{{ $photoUrl }}"
+                                alt=""
+                                class="h-full w-full object-cover {{ $photoUrl ? '' : 'hidden' }}"
+                                onerror="this.classList.add('hidden'); document.getElementById('avatarInitial').classList.remove('hidden');"
+                            >
+
+                            {{-- Initial huruf (fallback) --}}
+                            <span
+                                id="avatarInitial"
+                                class="text-[2vw] font-bold text-black {{ $photoUrl ? 'hidden' : '' }}"
+                            >{{ $initial }}</span>
+
+                            {{-- Camera overlay --}}
+                            <div class="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-black/30 opacity-0 transition group-hover:opacity-100">
+                                <span class="text-[1.8vh] text-white">📷</span>
+                            </div>
                         </div>
 
                         <div class="flex-1">
-                            <label class="mb-1 block text-sm font-semibold text-gray-700">
+                            <label class="mb-[1vh] block text-[0.95vw] font-semibold text-gray-700">
                                 Foto Profil
                             </label>
-
                             <input
+                                id="photoInput"
                                 type="file"
                                 name="photo"
                                 accept="image/*"
-                                class="w-full rounded-xl border border-black bg-white px-3 py-2 text-sm outline-none"
+                                class="w-full rounded-xl border border-black bg-white px-[1vw] py-[1.5vh] text-[0.85vw] outline-none file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-yellow-300 file:px-3 file:py-1 file:text-[0.85vw] file:font-semibold hover:file:bg-yellow-400"
                             >
+                            <p class="mt-[0.5vh] text-[0.8vw] text-gray-400">JPG, PNG, WebP — maks. 2 MB</p>
                         </div>
                     </div>
 
@@ -152,10 +167,7 @@
             </div>
         </main>
 
-        <!-- Footer -->
-        <footer class="mt-auto flex h-14 items-center justify-center border-t border-black bg-white text-sm font-semibold tracking-wide text-gray-500">
-            © 2026 Taskora. All rights reserved.
-        </footer>
     </div>
+    <script src="{{ asset('js/profil.js') }}"></script>
 </body>
 </html>

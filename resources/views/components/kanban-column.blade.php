@@ -6,6 +6,7 @@
 ])
 
 <section
+    data-column-status="{{ $status }}"
     class="group flex min-h-80 flex-col rounded-xl border border-black bg-white shadow-[6px_6px_0_#000] transition duration-300 hover:-translate-y-1 hover:shadow-[10px_10px_0_#000]"
 >
     <header class="{{ $headerClass }} flex items-center justify-between rounded-t-xl border-b border-black px-4 py-3">
@@ -14,7 +15,7 @@
                 {{ $title }}
             </h3>
 
-            <span class="flex h-8 min-w-10 items-center justify-center rounded-md border border-black bg-white px-3 text-sm font-bold leading-none text-black">
+            <span class="count-badge flex h-8 min-w-10 items-center justify-center rounded-md border border-black bg-white px-3 text-sm font-bold leading-none text-black">
                 {{ $count }}
             </span>
         </div>

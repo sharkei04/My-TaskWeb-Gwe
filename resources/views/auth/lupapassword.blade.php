@@ -6,8 +6,8 @@
 
         <!-- Header -->
         <div class="text-left pb-7">
-            <h1 class="text-3xl font-bold text-black">Lupa Password?</h1>
-            <p class="text-gray-500 mt-2">Masukkan email Anda dan kami akan mengirimkan link reset password.</p>
+            <h1 class="text-3xl font-bold text-black">Forgot Password?</h1>
+            <p class="text-gray-500 mt-2">Enter your email and we will send you a link to reset your password.</p>
         </div>
 
         {{-- Status success --}}
@@ -34,7 +34,7 @@
                     type="email"
                     name="email"
                     value="{{ old('email') }}"
-                    placeholder="Masukkan Email Anda"
+                    placeholder="Enter Your Email"
                     class="w-full px-4 py-3 border rounded-md focus:ring-2 focus:ring-amber-300 focus:outline-none"
                     required
                 >
@@ -45,13 +45,13 @@
                 type="submit"
                 class="w-full bg-amber-300 hover:bg-yellow-400 text-black py-3 rounded-md transition border border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"
             >
-                Kirim Link Reset Password
+                Send Password Reset Link
             </button>
         </form>
 
         <p class="text-center text-sm text-gray-500 mt-6">
-            Ingat password Anda?
-            <a href="{{ route('login.form') }}" class="text-yellow-500 hover:underline">Kembali ke Login</a>
+            Remember your password?
+            <a href="{{ route('login.form') }}" class="text-yellow-500 hover:underline">Back to Login</a>
         </p>
     </div>
 </div>

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Taskora</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
-<body class="min-h-screen bg-gray-100">
+<body class="min-h-screen bg-gray-100 flex-col">
     @php
         $user = auth()->user();
         $nickname = $user?->nickname ?? $user?->name ?? 'User';
@@ -21,12 +22,6 @@
                 'route' => 'dashboard',
                 'icon' => 'dashboard_icon.png',
                 'active' => request()->routeIs('dashboard'),
-            ],
-            [
-                'label' => 'My Tasks',
-                'route' => 'tasks.index',
-                'icon' => 'mytasks_icon.png',
-                'active' => request()->routeIs('tasks.*'),
             ],
             [
                 'label' => 'Members',
@@ -43,7 +38,7 @@
         ];
     @endphp
 
-    <header class="sticky top-0 z-40 flex min-h-16 items-center gap-3 border-b border-black bg-white px-4 py-2">
+    <header class="sticky top-0 z-40 flex items-center gap-3 px-4 py-2 bg-white border-b border-black min-h-16">
         <button
             id="openSidebar"
             type="button"
@@ -53,20 +48,20 @@
             ☰
         </button>
 
-        <a href="{{ route('dashboard') }}" class="flex shrink-0 items-center">
+        <a href="{{ route('dashboard') }}" class="flex items-center shrink-0">
             <img
                 src="{{ asset('images/taskora_logo.png') }}"
                 alt="Taskora Logo"
-                class="h-12 w-auto object-contain md:h-14"
+                class="object-contain w-auto h-12 md:h-14"
             >
         </a>
 
-        <form action="{{ route('dashboard') }}" method="GET" class="min-w-0 flex-1">
+        <form action="{{ route('dashboard') }}" method="GET" class="flex-1 min-w-0">
             <label for="search" class="sr-only">Search tasks</label>
 
             <div class="mx-auto flex h-11 w-full max-w-2xl items-center gap-2 rounded-lg border border-black bg-white px-3 shadow-[4px_4px_0_#000]">
                 <span class="text-lg font-bold text-gray-500">
-                    ⌕
+                    🔎︎
                 </span>
 
                 <input
@@ -75,27 +70,36 @@
                     type="text"
                     value="{{ request('q') }}"
                     placeholder="Search tasks..."
-                    class="w-full bg-transparent text-sm font-medium text-gray-700 outline-none placeholder:text-gray-400 md:text-base"
+                    class="w-full text-sm font-medium text-gray-700 bg-transparent outline-none placeholder:text-gray-400 md:text-base"
                 >
             </div>
         </form>
 
-        <div class="ml-auto flex shrink-0 items-center gap-3">
+        <div class="flex items-center gap-3 ml-auto shrink-0">
             <div class="relative">
                 <button
                     id="notificationButton"
                     type="button"
-                    class="flex h-11 w-11 items-center justify-center rounded-lg border border-black bg-white text-lg shadow-[4px_4px_0_#000] transition hover:bg-yellow-100"
+                    class="relative flex h-11 w-11 items-center justify-center rounded-lg border border-black bg-white text-lg shadow-[4px_4px_0_#000] transition hover:bg-yellow-100"
                     aria-label="Notifications"
                 >
-                    🔔
+                    <img
+                        src="{{ asset('images/notif_icon.png') }}"
+                        alt="Notifications"
+                        class="h-6 w-6 object-contain"
+                    >
+                    @if(isset($deadlineNotifications) && $deadlineNotifications->count())
+                        <span class="absolute top-0 right-0 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-black text-white">
+                            {{ $deadlineNotifications->count() }}
+                        </span>
+                    @endif
                 </button>
 
                 <div
                     id="notificationPanel"
                     class="absolute right-0 top-14 z-50 hidden w-80 rounded-xl border border-black bg-white shadow-[8px_8px_0_#000]"
                 >
-                    <div class="flex items-center justify-between border-b border-black px-4 py-3">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-black">
                         <h2 class="text-lg font-black text-black">
                             Notifications
                         </h2>
@@ -103,25 +107,52 @@
                         <button
                             id="closeNotification"
                             type="button"
-                            class="flex h-8 w-8 items-center justify-center rounded-lg border border-black bg-red-400 text-lg font-black text-black transition hover:bg-red-500"
+                            class="flex items-center justify-center w-8 h-8 text-lg font-black text-black transition bg-red-400 border border-black rounded-lg hover:bg-red-500"
                         >
                             ×
                         </button>
                     </div>
 
-                    <div class="flex min-h-56 flex-col items-center justify-center px-6 py-8 text-center">
-                        <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-black bg-yellow-100 text-3xl">
-                            🔔
+                    @if(isset($deadlineNotifications) && $deadlineNotifications->isNotEmpty())
+                        <div class="px-4 py-4 space-y-3">
+                            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
+                                Deadline Notifications
+                            </p>
+
+                            @foreach($deadlineNotifications as $notification)
+                                <a
+                                    href="{{ route('tasks.edit', $notification['task']) }}"
+                                    class="block px-4 py-3 text-left transition border rounded-xl border-black/10 bg-gray-50 hover:bg-yellow-50"
+                                >
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="text-sm font-bold text-black">
+                                            {{ $notification['task']->title }}
+                                        </span>
+                                        <span class="text-[11px] font-black uppercase {{ $notification['is_overdue'] ? 'text-red-600' : 'text-amber-600' }}">
+                                            {{ $notification['label'] }}
+                                        </span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-600">
+                                        {{ $notification['task']->deadline->format('d M Y') }} • {{ ucfirst(str_replace('_', ' ', $notification['task']->status)) }}
+                                    </p>
+                                </a>
+                            @endforeach
                         </div>
+                    @else
+                        <div class="flex flex-col items-center justify-center px-6 py-8 text-center min-h-56">
+                            <div class="flex items-center justify-center w-16 h-16 mb-4 text-3xl bg-yellow-100 border border-black rounded-full">
+                                <img
+                                    src="{{ asset('images/notif_icon.png') }}"
+                                    alt="Notifications"
+                                    class="h-6 w-6 object-contain"
+                                >
+                            </div>
 
-                        <p class="text-base font-bold text-black">
-                            No unread notifications
-                        </p>
-
-                        <p class="mt-2 text-sm font-medium text-gray-500">
-                            Belum ada notifikasi baru untuk saat ini.
-                        </p>
-                    </div>
+                            <p class="text-base font-bold text-black">
+                                No unread notifications
+                            </p>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -129,12 +160,12 @@
                 href="{{ route('profile.edit') }}"
                 class="flex h-11 items-center gap-2 rounded-lg border border-black bg-white px-2 shadow-[4px_4px_0_#000] transition hover:bg-yellow-100"
             >
-                <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-black text-sm font-bold text-white">
+                <div class="flex items-center justify-center w-8 h-8 overflow-hidden text-sm font-bold text-white bg-black rounded-full">
                     @if ($user?->photo)
                         <img
                             src="{{ asset('storage/' . $user->photo) }}"
                             alt="Profile Photo"
-                            class="h-full w-full object-cover"
+                            class="object-cover w-full h-full"
                         >
                     @else
                         {{ strtoupper(substr($nickname, 0, 1)) }}
@@ -142,11 +173,11 @@
                 </div>
 
                 <div class="hidden min-w-0 md:block">
-                    <p class="max-w-32 truncate text-sm font-bold leading-tight text-black">
+                    <p class="text-sm font-bold leading-tight text-black truncate max-w-32">
                         {{ $nickname }}
                     </p>
 
-                    <p class="max-w-32 truncate text-xs font-medium leading-tight text-gray-500">
+                    <p class="text-xs font-medium leading-tight text-gray-500 truncate max-w-32">
                         {{ $user?->username ? '@' . $user->username : 'Edit Profile' }}
                     </p>
                 </div>
@@ -156,7 +187,7 @@
 
     <div
         id="sidebarOverlay"
-        class="fixed inset-0 z-40 hidden bg-black/50 opacity-0 transition-opacity duration-300 ease-in-out"
+        class="fixed inset-0 z-40 hidden transition-opacity duration-300 ease-in-out opacity-0 bg-black/50"
     ></div>
 
     <aside
@@ -164,12 +195,12 @@
         class="fixed left-0 top-0 z-50 flex h-screen w-72 -translate-x-full flex-col justify-between border-r border-black bg-white shadow-[8px_0_0_#000] transition-transform duration-300 ease-in-out"
     >
         <div>
-            <div class="flex items-start justify-between border-b border-black px-4 py-4">
+            <div class="flex items-start justify-between px-4 py-4 border-b border-black">
                 <div>
                     <img
                         src="{{ asset('images/taskora_logo.png') }}"
                         alt="Taskora Logo"
-                        class="h-16 w-auto object-contain"
+                        class="object-contain w-auto h-16"
                     >
 
                     <p class="mt-1 text-sm font-semibold tracking-wide text-gray-500">
@@ -180,14 +211,14 @@
                 <button
                     id="closeSidebar"
                     type="button"
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-black bg-red-400 text-2xl font-black text-black transition hover:bg-red-500"
+                    class="flex items-center justify-center w-10 h-10 text-2xl font-black text-black transition bg-red-400 border border-black rounded-lg shrink-0 hover:bg-red-500"
                     aria-label="Close sidebar"
                 >
                     ×
                 </button>
             </div>
 
-            <nav class="mt-4 flex flex-col gap-3 px-4">
+            <nav class="flex flex-col gap-3 px-4 mt-4">
                 @foreach ($menus as $menu)
                     <a
                         href="{{ route($menu['route']) }}"
@@ -200,7 +231,7 @@
                         <img
                             src="{{ asset('images/' . $menu['icon']) }}"
                             alt="{{ $menu['label'] }} Icon"
-                            class="h-7 w-7 object-contain"
+                            class="object-contain h-7 w-7"
                         >
 
                         <span>{{ $menu['label'] }}</span>
@@ -221,10 +252,15 @@
         </form>
     </aside>
 
-    <main class="min-h-[calc(100vh-4rem)] bg-white">
+    <main class="flex-1 bg-white">
         @yield('content')
     </main>
 
+    <footer class="flex min-h-14 items-center justify-center border-t border-black bg-white px-4 py-3 text-center text-sm font-semibold tracking-wide text-gray-500">
+        © 2026 Taskora. All rights reserved.
+    </footer>
+    
+    <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/sidebar.js') }}"></script>
     <script src="{{ asset('js/notification.js') }}"></script>
 </body>

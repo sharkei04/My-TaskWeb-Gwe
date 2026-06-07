@@ -86,11 +86,33 @@ class TaskController extends Controller
         return redirect()->route('dashboard') ->with('success', 'Tugas berhasil diperbarui!');
     }
 
+    public function updateStatus(Request $request, Task $task)
+    {
+        abort_if($task->user_id !== auth()->id(), 403);
+
+        $request->validate([
+            'status' => ['required', 'in:todo,in_progress,done'],
+        ]);
+
+        $task->update(['status' => $request->status]);
+
+        return response()->json([
+            'message' => 'Status tugas berhasil diperbarui.',
+            'status' => $task->status,
+        ]);
+    }
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Task $task)
     {
-        //
+        abort_if($task->user_id !== auth()->id(), 403);
+
+        $task->labels()->detach();
+        $task->delete();
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Tugas berhasil dihapus.');
     }
 }
